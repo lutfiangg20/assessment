@@ -1,10 +1,12 @@
 from flask import Flask,jsonify,g
 
 import sqlite3
+from flask_cors import CORS
 
 
 app = Flask(__name__)
 DATABASE = 'database.db'
+CORS(app)
 
 """ def get_db():
     db=getattr(g, '_database', None)

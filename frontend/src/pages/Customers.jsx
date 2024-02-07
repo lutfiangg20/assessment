@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 
@@ -35,6 +36,26 @@ const rows = [
 ];
 
 const Customers = () => {
+  const [customers, setCustomers] = useState([]);
+
+  const fetchCustomers = async () => {
+    await fetch("http://127.0.0.1:5000/api/customers", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCustomers(data);
+        console.log(data);
+      });
+  };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
+
   return (
     <div className="">
       <Navbar>
