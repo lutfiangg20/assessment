@@ -1,42 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
-import { DataGrid } from "@mui/x-data-grid";
-
-const columns = [
-  { field: "id", headerName: "ID", width: 70 },
-  { field: "firstName", headerName: "First name", width: 130 },
-  { field: "lastName", headerName: "Last name", width: 130 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
-  },
-  {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  },
-];
-
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
+import {
+  MaterialReactTable,
+  useMaterialReactTable,
+} from "material-react-table";
+import { Button } from "@mui/material";
+import { GridAddIcon, GridDeleteIcon } from "@mui/x-data-grid";
+import AddCustomer from "../components/AddCustomer";
+import { GetColorName } from "hex-color-to-color-name";
 
 const Customers = () => {
-  const [customers, setCustomers] = useState([]);
+  const [data, setData] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    instagram_users: "",
+    favorite_outfit_color: "",
+  });
 
   const fetchCustomers = async () => {
     await fetch("http://127.0.0.1:5000/api/customers", {
@@ -47,30 +26,132 @@ const Customers = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setCustomers(data);
+        setData(data);
         console.log(data);
       });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await fetch("http://127.0.0.1:5000/api/customers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    }).then((res) => {
+      if (res.ok) {
+        fetchCustomers();
+        setFormData({
+          name: "",
+          instagram_users: "",
+          favorite_outfit_color: "",
+        });
+      }
+    });
+  };
+
+  const handleDelete = async (id) => {
+    await fetch(`http://127.0.0.1:5000/api/customers/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      if (res.ok) {
+        fetchCustomers();
+      }
+    });
   };
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name", //simple recommended way to define a column
+        header: "Name",
+        muiTableHeadCellProps: {
+          sx: { color: "black" },
+        }, //custom props
+        muiTableBodyCellProps: {
+          sx: { textTransform: "capitalize" },
+        },
+        Cell: ({ renderedCellValue }) => <p>{renderedCellValue}</p>, //optional custom cell render
+      },
+      {
+        accessorKey: "instagram_users", //simple recommended way to define a column
+        header: "Instagram",
+        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+        Cell: ({ renderedCellValue }) => <p>{renderedCellValue}</p>, //optional custom cell render
+      },
+      {
+        accessorKey: "favorite_outfit_color", //simple recommended way to define a column
+        header: "Favorit Outfit Color",
+        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+        muiTableBodyCellProps: {
+          sx: { textTransform: "capitalize" },
+        },
+        Cell: ({ renderedCellValue }) => (
+          <strong style={{ color: renderedCellValue }}>
+            {GetColorName(renderedCellValue)}
+          </strong>
+        ), //optional custom cell render
+      },
+      {
+        accessorKey: "id", //simple recommended way to define a column
+        header: "Delete",
+        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+        muiTableBodyCellProps: ({ row }) => ({
+          sx: { textTransform: "capitalize" },
+          onClick: () => {
+            handleDelete(row.original.id);
+          },
+        }),
+        Cell: () => (
+          <Button variant="outlined" startIcon={<GridDeleteIcon />}>
+            Delete
+          </Button>
+        ), //optional custom cell render
+      },
+      /* {
+        accessorFn: (row) => row.age, //alternate way
+        id: "age", //id required if you use accessorFn instead of accessorKey
+        header: "Age",
+        Header: <i style={{ color: "red" }}>Age</i>, //optional custom markup
+      }, */
+    ],
+    []
+  );
+
+  const table = useMaterialReactTable({
+    data,
+    columns,
+    enableRowNumbers: true,
+    rowNumberDisplayMode: "original",
+  });
+
   return (
     <div className="">
       <Navbar>
-        <p>ini page customers</p>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
+        {/* Open the modal using document.getElementById('ID').showModal() method */}
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="outlined"
+            startIcon={<GridAddIcon />}
+            onClick={() => document.getElementById("add").showModal()}
+          >
+            Add Customer
+          </Button>
+        </div>
+        <AddCustomer
+          handleSubmit={handleSubmit}
+          setFormData={setFormData}
+          formData={formData}
         />
+        <MaterialReactTable table={table} />
       </Navbar>
     </div>
   );

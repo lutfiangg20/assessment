@@ -1,4 +1,4 @@
-from flask import Flask,jsonify,g
+from flask import Flask,jsonify,g,request
 
 import sqlite3
 from flask_cors import CORS
@@ -20,6 +20,8 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+
+
 @app.route('/api/customers', methods=['GET'])
 def get_data():
     conn = get_db_connection()
@@ -34,6 +36,34 @@ def get_data():
         json_data.append(dict(row))
         
     return jsonify(json_data)
+
+@app.route('/api/customers', methods=['POST'])
+def add_data():
+    # Get JSON data from the request
+    data = request.json
+
+    # Connect to the database
+    conn = get_db_connection()
+
+    # Insert data into the database
+    conn.execute('INSERT INTO customers (name, instagram_users,favorite_outfit_color) VALUES (?, ?,?)',
+                 (data['name'], data['instagram_users'],data['favorite_outfit_color']))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Data added successfully'})
+
+@app.route('/api/customers/<int:id>', methods=['DELETE'])
+def delete_entry(id):
+    # Connect to the database
+    conn = get_db_connection()
+
+    # Execute the delete operation
+    conn.execute('DELETE FROM customers WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'message': 'Entry deleted successfully'})
 
 """ @app.teardown_appcontext
 def close_connection(exception):
