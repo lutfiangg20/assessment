@@ -14,7 +14,7 @@ const AddCustomer = ({ formData, setFormData, handleSubmit }) => {
   }, [color]);
   return (
     <dialog id="add" className="modal modal-bottom sm:modal-middle ">
-      <div className="modal-box  w-11/12 max-w-5xl px-10">
+      <div className="modal-box  w-full max-w-5xl px-10">
         <form onSubmit={handleSubmit} className="mt-10">
           {/* <strong>Personal Information</strong> */}
           <strong className="mb-5">Personal Information</strong>
