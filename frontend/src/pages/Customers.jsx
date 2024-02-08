@@ -85,7 +85,16 @@ const Customers = () => {
         accessorKey: "instagram_users", //simple recommended way to define a column
         header: "Instagram",
         muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
-        Cell: ({ renderedCellValue }) => <p>{renderedCellValue}</p>, //optional custom cell render
+        Cell: ({ renderedCellValue }) => (
+          <a
+            href={`https://www.instagram.com/${renderedCellValue}`}
+            target="_blank"
+            rel="noreferrer"
+            className="no-underline hover:underline hover:text-blue-500 hover:font-bold"
+          >
+            {renderedCellValue}
+          </a>
+        ), //optional custom cell render
       },
       {
         accessorKey: "favorite_outfit_color", //simple recommended way to define a column
