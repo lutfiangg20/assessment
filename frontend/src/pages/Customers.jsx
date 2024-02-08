@@ -45,8 +45,9 @@ const Customers = () => {
         setFormData({
           name: "",
           instagram_users: "",
-          favorite_outfit_color: "",
+          favorite_outfit_color: "#aabbcc",
         });
+        document.getElementById("add").close();
       }
     });
   };

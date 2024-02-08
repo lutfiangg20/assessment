@@ -4,10 +4,7 @@ const Navbar = (props) => {
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 px-10 py-4">
       <div className="flex flex-wrap items-center justify-between mb-10">
-        <a
-          href="https://flowbite.com/"
-          className="flex items-center space-x-3 rtl:space-x-reverse"
-        >
+        <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
           <img
             src="/src/assets/aisensum.png"
             className="h-8"
