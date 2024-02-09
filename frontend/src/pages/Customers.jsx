@@ -27,7 +27,6 @@ const Customers = () => {
       .then((res) => res.json())
       .then((data) => {
         setData(data);
-        console.log(data);
       });
   };
 
@@ -69,72 +68,63 @@ const Customers = () => {
     fetchCustomers();
   }, []);
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "name", //simple recommended way to define a column
-        header: "Name",
-        muiTableHeadCellProps: {
-          sx: { color: "black" },
-        }, //custom props
-        muiTableBodyCellProps: {
-          sx: { textTransform: "capitalize" },
+  const columns = useMemo(() => [
+    {
+      accessorKey: "name", //simple recommended way to define a column
+      header: "Name",
+      muiTableHeadCellProps: {
+        sx: { color: "black" },
+      }, //custom props
+      muiTableBodyCellProps: {
+        sx: { textTransform: "capitalize" },
+      },
+      Cell: ({ renderedCellValue }) => <p>{renderedCellValue}</p>, //optional custom cell render
+    },
+    {
+      accessorKey: "instagram_users", //simple recommended way to define a column
+      header: "Instagram",
+      muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+      Cell: ({ renderedCellValue }) => (
+        <a
+          href={`https://www.instagram.com/${renderedCellValue}`}
+          target="_blank"
+          rel="noreferrer"
+          className="no-underline hover:underline hover:text-blue-500 hover:font-bold"
+        >
+          {renderedCellValue}
+        </a>
+      ), //optional custom cell render
+    },
+    {
+      accessorKey: "favorite_outfit_color", //simple recommended way to define a column
+      header: "Favorit Outfit Color",
+      muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+      muiTableBodyCellProps: {
+        sx: { textTransform: "capitalize" },
+      },
+      Cell: ({ renderedCellValue }) => (
+        <strong style={{ color: renderedCellValue }}>
+          {GetColorName(renderedCellValue)}
+        </strong>
+      ), //optional custom cell render
+    },
+    {
+      accessorKey: "id", //simple recommended way to define a column
+      header: "Delete",
+      muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
+      muiTableBodyCellProps: ({ row }) => ({
+        sx: { textTransform: "capitalize" },
+        onClick: () => {
+          handleDelete(row.original.id);
         },
-        Cell: ({ renderedCellValue }) => <p>{renderedCellValue}</p>, //optional custom cell render
-      },
-      {
-        accessorKey: "instagram_users", //simple recommended way to define a column
-        header: "Instagram",
-        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
-        Cell: ({ renderedCellValue }) => (
-          <a
-            href={`https://www.instagram.com/${renderedCellValue}`}
-            target="_blank"
-            rel="noreferrer"
-            className="no-underline hover:underline hover:text-blue-500 hover:font-bold"
-          >
-            {renderedCellValue}
-          </a>
-        ), //optional custom cell render
-      },
-      {
-        accessorKey: "favorite_outfit_color", //simple recommended way to define a column
-        header: "Favorit Outfit Color",
-        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
-        muiTableBodyCellProps: {
-          sx: { textTransform: "capitalize" },
-        },
-        Cell: ({ renderedCellValue }) => (
-          <strong style={{ color: renderedCellValue }}>
-            {GetColorName(renderedCellValue)}
-          </strong>
-        ), //optional custom cell render
-      },
-      {
-        accessorKey: "id", //simple recommended way to define a column
-        header: "Delete",
-        muiTableHeadCellProps: { sx: { color: "black" } }, //custom props
-        muiTableBodyCellProps: ({ row }) => ({
-          sx: { textTransform: "capitalize" },
-          onClick: () => {
-            handleDelete(row.original.id);
-          },
-        }),
-        Cell: () => (
-          <Button variant="outlined" startIcon={<GridDeleteIcon />}>
-            Delete
-          </Button>
-        ), //optional custom cell render
-      },
-      /* {
-        accessorFn: (row) => row.age, //alternate way
-        id: "age", //id required if you use accessorFn instead of accessorKey
-        header: "Age",
-        Header: <i style={{ color: "red" }}>Age</i>, //optional custom markup
-      }, */
-    ],
-    []
-  );
+      }),
+      Cell: () => (
+        <Button variant="outlined" startIcon={<GridDeleteIcon />}>
+          Delete
+        </Button>
+      ), //optional custom cell render
+    },
+  ]);
 
   const table = useMaterialReactTable({
     data,
@@ -146,7 +136,6 @@ const Customers = () => {
   return (
     <div className="">
       <Navbar>
-        {/* Open the modal using document.getElementById('ID').showModal() method */}
         <div className="flex justify-end mb-4">
           <Button
             variant="outlined"
