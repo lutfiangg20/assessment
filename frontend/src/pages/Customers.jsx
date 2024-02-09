@@ -16,6 +16,7 @@ const Customers = () => {
     instagram_users: "",
     favorite_outfit_color: "",
   });
+  const [errors, setErrors] = useState({});
 
   const fetchCustomers = async () => {
     await fetch("http://127.0.0.1:5000/api/customers", {
@@ -32,23 +33,36 @@ const Customers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await fetch("http://127.0.0.1:5000/api/customers", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    }).then((res) => {
-      if (res.ok) {
-        fetchCustomers();
-        setFormData({
-          name: "",
-          instagram_users: "",
-          favorite_outfit_color: "#aabbcc",
-        });
-        document.getElementById("add").close();
-      }
-    });
+
+    const validationErrors = {};
+
+    if (!formData.name.trim()) {
+      validationErrors.name = "Name is required";
+    }
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+      // Submit your form data here
+      console.log("Form submitted:", formData);
+
+      await fetch("http://127.0.0.1:5000/api/customers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }).then((res) => {
+        if (res.ok) {
+          fetchCustomers();
+          setFormData({
+            name: "",
+            instagram_users: "",
+            favorite_outfit_color: "#aabbcc",
+          });
+          document.getElementById("add").close();
+        }
+      });
+    }
   };
 
   const handleDelete = async (id) => {
@@ -149,6 +163,7 @@ const Customers = () => {
           handleSubmit={handleSubmit}
           setFormData={setFormData}
           formData={formData}
+          errors={errors}
         />
         <MaterialReactTable table={table} />
       </Navbar>

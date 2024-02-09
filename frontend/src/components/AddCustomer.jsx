@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 import { GetColorName } from "hex-color-to-color-name";
 
-const AddCustomer = ({ formData, setFormData, handleSubmit }) => {
+const AddCustomer = ({ formData, setFormData, handleSubmit, errors }) => {
   const [color, setColor] = useState("#aabbcc");
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const AddCustomer = ({ formData, setFormData, handleSubmit }) => {
               margin="dense"
               id="name"
               label="Name"
+              {...(errors.name && { error: true, helperText: errors.name })}
               type="text"
               variant="standard"
               fullWidth
@@ -37,7 +38,7 @@ const AddCustomer = ({ formData, setFormData, handleSubmit }) => {
           <div>
             <TextField
               margin="dense"
-              id="name"
+              id="instagram"
               label="Instagram"
               type="text"
               variant="standard"
@@ -57,7 +58,7 @@ const AddCustomer = ({ formData, setFormData, handleSubmit }) => {
           <div>
             <TextField
               margin="dense"
-              id="name"
+              id="color"
               label="Favorite Outfit Color"
               type="text"
               variant="standard"
